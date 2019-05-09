@@ -1,31 +1,40 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import {
-  StyleSheet,
-  Text,
-  View,
-  ViewPropTypes,
-  ViewStyle,
-  TextStyle,
-} from 'react-native'
+/* eslint no-use-before-define: ["error", { "variables": false }] */
 
-import moment from 'moment'
+import PropTypes from 'prop-types';
+import React from 'react';
+import { StyleSheet, Text, View, ViewPropTypes } from 'react-native';
 
-import Color from './Color'
-import { TIME_FORMAT } from './Constant'
-import { LeftRightStyle, IMessage } from './types'
+import moment from 'moment';
+
+import Color from './Color';
+import { TIME_FORMAT } from './Constant';
+
+export default function Time(
+  { position, containerStyle, currentMessage, timeFormat, textStyle, timeTextStyle },
+  context,
+) {
+  return (
+    <View style={[styles[position].container, containerStyle[position]]}>
+      <Text style={[styles[position].text, textStyle[position], timeTextStyle[position]]}>
+        {moment(currentMessage.createdAt)
+          .locale(context.getLocale())
+          .format(timeFormat)}
+      </Text>
+    </View>
+  );
+}
 
 const containerStyle = {
   marginLeft: 10,
   marginRight: 10,
   marginBottom: 5,
-}
+};
 
 const textStyle = {
   fontSize: 10,
   backgroundColor: 'transparent',
   textAlign: 'right',
-}
+};
 
 const styles = {
   left: StyleSheet.create({
@@ -42,59 +51,15 @@ const styles = {
       ...containerStyle,
     },
     text: {
-      color: Color.white,
+      color: Color.timeTextColor,
       ...textStyle,
     },
   }),
-}
-
-interface TimeProps<TMessage extends IMessage = IMessage> {
-  position: 'left' | 'right'
-  currentMessage?: TMessage
-  containerStyle?: LeftRightStyle<ViewStyle>
-  textStyle?: LeftRightStyle<TextStyle>
-  timeFormat?: string
-}
-
-export default function Time(
-  {
-    position,
-    containerStyle,
-    currentMessage,
-    timeFormat,
-    textStyle,
-  }: TimeProps,
-  context: any,
-) {
-  if (!!currentMessage) {
-    return (
-      <View
-        style={[
-          styles[position].container,
-          containerStyle && containerStyle[position],
-        ]}
-      >
-        <Text
-          style={
-            [
-              styles[position].text,
-              textStyle && textStyle[position],
-            ] as TextStyle
-          }
-        >
-          {moment(currentMessage.createdAt)
-            .locale(context.getLocale())
-            .format(timeFormat)}
-        </Text>
-      </View>
-    )
-  }
-  return null
-}
+};
 
 Time.contextTypes = {
   getLocale: PropTypes.func,
-}
+};
 
 Time.defaultProps = {
   position: 'left',
@@ -105,7 +70,7 @@ Time.defaultProps = {
   textStyle: {},
   timeFormat: TIME_FORMAT,
   timeTextStyle: {},
-}
+};
 
 Time.propTypes = {
   position: PropTypes.oneOf(['left', 'right']),
@@ -115,12 +80,12 @@ Time.propTypes = {
     right: ViewPropTypes.style,
   }),
   textStyle: PropTypes.shape({
-    left: PropTypes.any,
-    right: PropTypes.any,
+    left: Text.propTypes.style,
+    right: Text.propTypes.style,
   }),
   timeFormat: PropTypes.string,
   timeTextStyle: PropTypes.shape({
-    left: PropTypes.any,
-    right: PropTypes.any,
+    left: Text.propTypes.style,
+    right: Text.propTypes.style,
   }),
-}
+};
